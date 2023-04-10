@@ -5,6 +5,8 @@ import vk_api
 
 user_is_logged = False
 
+START_POST_ID = 18840
+
 def vk_auth(login, password):
     global vk_session
     global vk
@@ -20,6 +22,10 @@ def vk_auth(login, password):
 
 banned_or_deleted_users = []
 banned_or_deleted_users_id = []
+posts = []
+users = []
+users_id = []
+active_users = []
 
 
 def set_group_id():
@@ -61,7 +67,7 @@ def login():
 
         inp_login = input("Введите логин (номер телефона или почта):")
 
-        if inp_login.lower() == "exit": return True
+        if inp_login.lower() == "exit": break
 
         print("Введите пароль")
         inp_password = getpass.getpass()
@@ -75,6 +81,50 @@ def login():
             print("Ошибка!")
             print("Проверьте правильность введенных данных или свяжитесь с разработчиком")
 
+
+
+def get_all_users_id():
+
+    group_users = vk.groups.getMembers(group_id = GROUP_ID)
+    list_mem = group_users['items']
+    users = vk.users.get(user_ids = list_mem)
+
+    global users_id
+    
+    users_id = []
+    
+    for j in users:
+        users_id.append(j['id'])
+
+
+
+def get_all_posts_id():
+    g_id = "-" + GROUP_ID
+    group_wall = vk.wall.get(owner_id = g_id)
+
+
+    posts_count = group_wall['count']
+    n = 0
+
+    print("Получение списка всех постов группы...")
+
+    while(posts_count > 0):
+        group_wall = vk.wall.get(owner_id = g_id, offset = n, count = 100)
+        all_posts = group_wall['items']
+
+
+        for i in all_posts:
+            
+            if(i['id'] == START_POST_ID):
+                posts_count = -1
+                break
+
+            posts.append(i['id'])
+
+        posts_count = posts_count - 100
+        n = n + 100
+
+    print("Операция завершена. Список получен")
 
 
 def get_banned_and_deleted_accounts():
@@ -102,6 +152,38 @@ def group_info():
     print(group_inf[0]['name'])
 
 
+def non_active_users():
+
+    g_id = "-" + GROUP_ID
+
+    if(len(posts) == 0): get_all_posts_id()
+    if(len(users_id) == 0): get_all_users_id()
+
+    group_users = vk.groups.getMembers(group_id = GROUP_ID)
+    list_mem = group_users['items']
+    users = vk.users.get(user_ids = list_mem)
+
+
+    for id in posts:
+        post_likes = vk.wall.getLikes(owner_id = g_id, post_id = id)['users']
+        
+        for like_id in post_likes:
+            if like_id['uid'] not in active_users and like_id['uid'] in users_id:
+                active_users.append(like_id['uid'])
+
+
+
+    print("Колличество пользователей:" + str(len(users)))    
+    print("Колличество активных пользователей:" + str(len(active_users)))
+
+
+    for user in users:
+        if user['id'] not in active_users:
+            print(user['first_name'] + " " + user['last_name'] + " https://vk.com/id" + str(user['id']))
+
+    
+
+
 
 print("Чтобы пользоватся командами необходи пройти авторизацию в VK API, для прохождения авторизации напишете команду - login")
 print("В случае ошибки свяжитесь с разработчиком")
@@ -118,10 +200,14 @@ try:
         if inp.lower() == "help":
             print("login - войти в другой аккаунт")
             print("set_group_id - установить новый id группы")
+            print("non_active_users - получение списка неактивных пользователей группы")
             print("get_banned_or_deleted - получение списка удаленных или забанненых пользователей")
             print("group_info - получить информацию о текущей группе")
             print("exit - выход из программы")
         
+        if inp.lower() == "non_active_users":
+            non_active_users()
+
         if inp.lower() == "get_banned_or_deleted":
             get_banned_and_deleted_accounts()
 
