@@ -3,9 +3,10 @@ import logging
 import getpass
 import vk_api
 
+from datetime import datetime
+
 user_is_logged = False
 
-START_POST_ID = 18840
 
 def vk_auth(login, password):
     global vk_session
@@ -29,7 +30,7 @@ active_users = []
 
 
 def set_group_id():
-    global GROUP_ID 
+    global GROUP_ID
 
     GROUP_ID = 0
 
@@ -106,7 +107,9 @@ def get_all_posts_id():
     posts_count = group_wall['count']
     n = 0
 
-    print("Получение списка всех постов группы...")
+    POST_ID = get_post_id()
+
+    print("Получение списка постов группы...")
 
     while(posts_count > 0):
         group_wall = vk.wall.get(owner_id = g_id, offset = n, count = 100)
@@ -115,7 +118,7 @@ def get_all_posts_id():
 
         for i in all_posts:
             
-            if(i['id'] == START_POST_ID):
+            if(i['id'] == POST_ID):
                 posts_count = -1
                 break
 
@@ -145,6 +148,25 @@ def get_banned_and_deleted_accounts():
 
 
 
+
+def get_post_id():
+    print("Укажите ID поста с до которого будет собрана статистика")
+    print("Пример как получить ID:")
+    print("1. Скопируете ссылку на пост")
+    print("Последние цифры в ссылке после нижнего слеша и буду ID поста")
+    print("Например - https://vk.com/wall-211840014_15565, 15565 является ID")
+    
+    print("Если вы не хотите задовать ID, просто нажмите ENTER в следующем поле ввода")
+
+    inp_post = input("Введите ID:")
+
+    if inp_post != "":
+        return inp_post
+    
+    return 0
+
+
+
 def group_info():
 
     group_inf = vk.groups.getById(group_id = GROUP_ID)
@@ -152,8 +174,40 @@ def group_info():
     print(group_inf[0]['name'])
 
 
-def non_active_users():
 
+
+''' ФУНКЦИЯ УСТАНОВКИ ВРЕМЕНИ
+def set_time():
+    print("Введите время с которого начнеться сбор статистиик")
+    print("Для проверки за все время введите - all")
+    
+    while(True):
+        print("Введите дату в следующем формате - 01/01/1970 10:00:00")
+        print("Для отмены опеарции введите 'exit'")
+
+        inp_time = input("> ")
+
+        if inp_time.lower() == "exit" : break
+
+        if inp_time.lower() == "all": return 0
+
+        
+        try:
+            time = datetime.strptime(inp_time, '%d/%m/%Y %H:%H:%S')
+
+            break
+        except Exception as e:
+            logging.error(traceback.format_exc())
+            print("Ошибка!")
+            print("Проверьте правильность введенных данных или свяжитесь с разработчиком")
+
+    return False
+'''
+
+
+
+def non_active_users():
+    
     g_id = "-" + GROUP_ID
 
     if(len(posts) == 0): get_all_posts_id()
