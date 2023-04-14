@@ -35,7 +35,7 @@ def set_group_id():
     GROUP_ID = 0
 
     while(True):
-        print("Для отмены опеарции введите 'exit'")
+        print("Для отмены операции введите 'exit'")
 
         inp_group = input("Введите id группы (цифры):")
 
@@ -64,7 +64,7 @@ def login():
     PASSWORD = ""
 
     while(True):
-        print("Для отмены опеарции введите 'exit'")
+        print("Для отмены операции введите 'exit'")
 
         inp_login = input("Введите логин (номер телефона или почта):")
 
@@ -143,7 +143,7 @@ def get_banned_and_deleted_accounts():
             banned_or_deleted_users.append(user['first_name'] + " " + user['last_name'])
             banned_or_deleted_users_id.append(str(user['id']))
 
-    print("Колличество пользователей:" + str(len(banned_or_deleted_users)))
+    print("Количество пользователей:" + str(len(banned_or_deleted_users)))
     for i in range(len(banned_or_deleted_users)): print(banned_or_deleted_users[i] + " https://vk.com/id" + banned_or_deleted_users_id[i])
 
 
@@ -160,12 +160,12 @@ def group_info():
 
 ''' ФУНКЦИЯ УСТАНОВКИ ВРЕМЕНИ '''
 def set_time():
-    print("Введите время с которого начнеться сбор статистиик")
+    print("Введите время с которого начнется сбор статистики")
     print("Для проверки за все время введите - all")
     
     while(True):
         print("Введите дату в следующем формате - 01/01/1970 10:00:00")
-        print("Для отмены опеарции введите 'exit'")
+        print("Для отмены операции введите 'exit'")
 
         inp_time = input("> ")
 
@@ -209,9 +209,9 @@ def non_active_users():
 
 
 
-    print("Колличество пользователей:" + str(len(users)))    
-    print("Колличество активных пользователей:" + str(len(active_users)))
-    print("Колличество неактивных пользователей:" + str(len(users) - len(active_users)))
+    print("Количество пользователей:" + str(len(users)))    
+    print("Количество активных пользователей:" + str(len(active_users)))
+    print("Количество неактивных пользователей:" + str(len(users) - len(active_users)))
 
 
     for user in users:
@@ -222,14 +222,14 @@ def non_active_users():
 
 
 
-print("Чтобы пользоватся командами необходи пройти авторизацию в VK API, для прохождения авторизации напишете команду - login")
+print("Чтобы пользоваться командами необходимо пройти авторизацию в VK API, для прохождения авторизации напишете команду - login")
 print("В случае ошибки свяжитесь с разработчиком")
 
 
 if login() or set_group_id(): exit()
 
 
-print("Добро пожаловать в VK Stat, для получения списка комманды введите 'help'")
+print("Добро пожаловать в VK Stat, для получения списка команд введите 'help'")
 
 try:
     while(True):
@@ -238,7 +238,7 @@ try:
             print("login - войти в другой аккаунт")
             print("set_group_id - установить новый id группы")
             print("non_active_users - получение списка неактивных пользователей группы")
-            print("get_banned_or_deleted - получение списка удаленных или забанненых пользователей")
+            print("get_banned_or_deleted - получение списка удаленных или забаненных пользователей")
             print("group_info - получить информацию о текущей группе")
             print("exit - выход из программы")
         
