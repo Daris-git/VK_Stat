@@ -107,7 +107,7 @@ def get_all_posts_id():
     posts_count = group_wall['count']
     n = 0
 
-    POST_ID = get_post_id()
+    STOP_DATE = set_time()
 
     print("Получение списка постов группы...")
 
@@ -118,7 +118,7 @@ def get_all_posts_id():
 
         for i in all_posts:
             
-            if(i['id'] == POST_ID):
+            if((STOP_DATE != False or STOP_DATE != 0) and datetime.fromtimestamp(i['date']) < STOP_DATE):
                 posts_count = -1
                 break
 
@@ -149,24 +149,6 @@ def get_banned_and_deleted_accounts():
 
 
 
-def get_post_id():
-    print("Укажите ID поста с до которого будет собрана статистика")
-    print("Пример как получить ID:")
-    print("1. Скопируете ссылку на пост")
-    print("Последние цифры в ссылке после нижнего слеша и буду ID поста")
-    print("Например - https://vk.com/wall-211840014_15565, 15565 является ID")
-    
-    print("Если вы не хотите задовать ID, просто нажмите ENTER в следующем поле ввода")
-
-    inp_post = input("Введите ID:")
-
-    if inp_post != "":
-        return inp_post
-    
-    return 0
-
-
-
 def group_info():
 
     group_inf = vk.groups.getById(group_id = GROUP_ID)
@@ -176,7 +158,7 @@ def group_info():
 
 
 
-''' ФУНКЦИЯ УСТАНОВКИ ВРЕМЕНИ
+''' ФУНКЦИЯ УСТАНОВКИ ВРЕМЕНИ '''
 def set_time():
     print("Введите время с которого начнеться сбор статистиик")
     print("Для проверки за все время введите - all")
@@ -193,16 +175,15 @@ def set_time():
 
         
         try:
-            time = datetime.strptime(inp_time, '%d/%m/%Y %H:%H:%S')
-
-            break
+            time = datetime.strptime(inp_time, '%d/%m/%Y %H:%M:%S')
+            return time
         except Exception as e:
             logging.error(traceback.format_exc())
             print("Ошибка!")
             print("Проверьте правильность введенных данных или свяжитесь с разработчиком")
 
     return False
-'''
+
 
 
 
@@ -217,6 +198,7 @@ def non_active_users():
     list_mem = group_users['items']
     users = vk.users.get(user_ids = list_mem)
 
+    print("Получение списка активных и неактивных пользователей...")
 
     for id in posts:
         post_likes = vk.wall.getLikes(owner_id = g_id, post_id = id)['users']
@@ -229,6 +211,7 @@ def non_active_users():
 
     print("Колличество пользователей:" + str(len(users)))    
     print("Колличество активных пользователей:" + str(len(active_users)))
+    print("Колличество неактивных пользователей:" + str(len(users) - len(active_users)))
 
 
     for user in users:
