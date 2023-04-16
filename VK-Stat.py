@@ -132,6 +132,9 @@ def get_all_posts_id():
 
 def get_banned_and_deleted_accounts():
 
+    banned_or_deleted_users = []
+    banned_or_deleted_users_id = []
+
     group_users = vk.groups.getMembers(group_id = GROUP_ID)
 
     list_mem = group_users['items']
