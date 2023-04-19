@@ -118,9 +118,12 @@ def get_all_posts_id():
 
         for i in all_posts:
             
-            if((STOP_DATE != False or STOP_DATE != 0) and datetime.fromtimestamp(i['date']) < STOP_DATE):
-                posts_count = -1
-                break
+            i_keys = list(i.keys())
+            
+            if('is_pinned' not in i_keys or i_keys.index('is_pinned') == 0):
+                if((STOP_DATE != False or STOP_DATE != 0) and datetime.fromtimestamp(i['date']) < STOP_DATE):
+                    posts_count = -1
+                    break
 
             posts.append(i['id'])
 
@@ -194,8 +197,8 @@ def non_active_users():
     
     g_id = "-" + GROUP_ID
 
-    if(len(posts) == 0): get_all_posts_id()
-    if(len(users_id) == 0): get_all_users_id()
+    get_all_posts_id()
+    get_all_users_id()
 
     group_users = vk.groups.getMembers(group_id = GROUP_ID)
     list_mem = group_users['items']
