@@ -8,6 +8,19 @@ from datetime import datetime
 user_is_logged = False
 
 
+
+
+def auth_handler():
+    """ При двухфакторной аутентификации вызывается эта функция.
+    """
+    # Код двухфакторной аутентификации
+    key = input("Введите код аутентификации:")
+    # Если: True - сохранить, False - не сохранять.
+    remember_device = True
+
+    return key, remember_device
+
+
 def vk_auth(login, password):
     global vk_session
     global vk
@@ -15,7 +28,7 @@ def vk_auth(login, password):
     LOGIN = login
     PASSWORD = password
 
-    vk_session = vk_api.VkApi(login, password)
+    vk_session = vk_api.VkApi(login, password, auth_handler = auth_handler)
     vk_session.auth()
 
     vk = vk_session.get_api()
