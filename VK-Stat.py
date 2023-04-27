@@ -13,9 +13,7 @@ user_is_logged = False
 def auth_handler():
     """ При двухфакторной аутентификации вызывается эта функция.
     """
-    # Код двухфакторной аутентификации
     key = input("Введите код аутентификации:")
-    # Если: True - сохранить, False - не сохранять.
     remember_device = True
 
     return key, remember_device
@@ -167,6 +165,63 @@ def get_banned_and_deleted_accounts():
 
 
 
+def check_two_groups():
+    GROUP_ID2 = 0
+
+    missed_users = []
+    missed_users_group = []
+
+    group_users = vk.groups.getMembers(group_id = GROUP_ID)
+    list_mem = group_users['items']
+    users = vk.users.get(user_ids = list_mem)
+
+
+    while(True):
+        print("Для отмены операции введите 'exit'")
+
+        inp_group = input("Введите id 2 группы (цифры):")
+
+        if inp_group.lower() == "exit": return False
+
+        try:
+            test_group = vk.groups.getMembers(group_id = inp_group)
+            test_group_info = vk.groups.getById(group_id = inp_group)
+            print("ID 2 группы подтвержден")
+            print(test_group_info[0]['name'])
+            GROUP_ID2 = inp_group
+            break
+        except Exception as e:
+            logging.error(traceback.format_exc())
+            print("Ошибка!")
+            print("Проверьте правильность введенных данных или свяжитесь с разработчиком")
+
+    group_users2 = vk.groups.getMembers(group_id = GROUP_ID2)
+    list_mem2 = group_users2['items']
+    users2 = vk.users.get(user_ids = list_mem2)
+
+    group_info = vk.groups.getById(group_id = GROUP_ID)
+    group_info2 = vk.groups.getById(group_id = GROUP_ID2)
+
+
+    for user in users:
+        if user not in missed_users and user not in users2:
+            missed_users.append(user)
+            missed_users_group.append(group_info[0]['name'])
+
+    for user in users2:
+        if user not in missed_users and user not in users:
+            missed_users.append(user)
+            missed_users_group.append(group_info2[0]['name'])
+
+    print("Количество пользователей отсутствующих в обоих группах - " + str(len(missed_users)))
+
+
+    for i in range(len(missed_users)):
+        print(missed_users[i]['first_name'] + " " + missed_users[i]['last_name'] + " https://vk.com/id" + str(missed_users[i]['id'])
+               + " отсутствует в группе " + missed_users_group[i])
+
+
+
 
 def group_info():
 
@@ -258,6 +313,7 @@ try:
             print("set_group_id - установить новый id группы")
             print("non_active_users - получение списка неактивных пользователей группы")
             print("get_banned_or_deleted - получение списка удаленных или забаненных пользователей")
+            print("check_two_groups - проверка списка пользователей двух групп на отсутствие")
             print("group_info - получить информацию о текущей группе")
             print("exit - выход из программы")
         
@@ -269,6 +325,9 @@ try:
 
         if inp.lower() == "set_group_id":
             set_group_id()
+
+        if inp.lower() == "check_two_groups":
+            check_two_groups()
 
         if inp.lower() == "group_info":
             group_info()
