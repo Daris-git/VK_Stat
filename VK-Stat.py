@@ -166,15 +166,32 @@ def get_banned_and_deleted_accounts():
 
 
 def check_two_groups():
-    GROUP_ID2 = 0
+    
+    group_id = 0
+    group_id2 = 0
 
-    missed_users = []
-    missed_users_group = []
+    missed_users1 = []
+    missed_users2 = []
 
-    group_users = vk.groups.getMembers(group_id = GROUP_ID)
-    list_mem = group_users['items']
-    users = vk.users.get(user_ids = list_mem)
 
+    while(True):
+        print("Для отмены операции введите 'exit'")
+
+        inp_group = input("Введите id 1 группы (цифры):")
+
+        if inp_group.lower() == "exit": return False
+
+        try:
+            test_group = vk.groups.getMembers(group_id = inp_group)
+            test_group_info = vk.groups.getById(group_id = inp_group)
+            print("ID 1 группы подтвержден")
+            print(test_group_info[0]['name'])
+            group_id = inp_group
+            break
+        except Exception as e:
+            logging.error(traceback.format_exc())
+            print("Ошибка!")
+            print("Проверьте правильность введенных данных или свяжитесь с разработчиком")
 
     while(True):
         print("Для отмены операции введите 'exit'")
@@ -188,37 +205,45 @@ def check_two_groups():
             test_group_info = vk.groups.getById(group_id = inp_group)
             print("ID 2 группы подтвержден")
             print(test_group_info[0]['name'])
-            GROUP_ID2 = inp_group
+            group_id2 = inp_group
             break
         except Exception as e:
             logging.error(traceback.format_exc())
             print("Ошибка!")
             print("Проверьте правильность введенных данных или свяжитесь с разработчиком")
 
-    group_users2 = vk.groups.getMembers(group_id = GROUP_ID2)
+
+    group_users = vk.groups.getMembers(group_id = group_id)
+    list_mem = group_users['items']
+    users = vk.users.get(user_ids = list_mem)
+
+    group_users2 = vk.groups.getMembers(group_id = group_id2)
     list_mem2 = group_users2['items']
     users2 = vk.users.get(user_ids = list_mem2)
 
-    group_info = vk.groups.getById(group_id = GROUP_ID)
-    group_info2 = vk.groups.getById(group_id = GROUP_ID2)
+    group_info = vk.groups.getById(group_id = group_id)
+    group_info2 = vk.groups.getById(group_id = group_id2)
 
 
     for user in users:
-        if user not in missed_users and user not in users2:
-            missed_users.append(user)
-            missed_users_group.append(group_info[0]['name'])
+        if user not in missed_users1 and user not in users2:
+            missed_users1.append(user)
 
     for user in users2:
-        if user not in missed_users and user not in users:
-            missed_users.append(user)
-            missed_users_group.append(group_info2[0]['name'])
-
-    print("Количество пользователей отсутствующих в обоих группах - " + str(len(missed_users)))
+        if user not in missed_users2 and user not in users:
+            missed_users2.append(user)
 
 
-    for i in range(len(missed_users)):
-        print(missed_users[i]['first_name'] + " " + missed_users[i]['last_name'] + " https://vk.com/id" + str(missed_users[i]['id'])
-               + " отсутствует в группе " + missed_users_group[i])
+
+    print("Количество пользователей отсутствующих в группе " + group_info2[0]['name'] + " - " + str(len(missed_users1)))
+    for i in range(len(missed_users1 )):
+        print(missed_users1[i]['first_name'] + " " + missed_users1[i]['last_name'] + " https://vk.com/id" + str(missed_users1[i]['id']))
+        
+    print(" ")
+
+    print("Количество пользователей отсутствующих в группе " + group_info[0]['name'] + " - " + str(len(missed_users2)))
+    for i in range(len(missed_users2 )):
+        print(missed_users2[i]['first_name'] + " " + missed_users2[i]['last_name'] + " https://vk.com/id" + str(missed_users2[i]['id']))
 
 
 
@@ -313,7 +338,7 @@ try:
             print("set_group_id - установить новый id группы")
             print("non_active_users - получение списка неактивных пользователей группы")
             print("get_banned_or_deleted - получение списка удаленных или забаненных пользователей")
-            print("check_two_groups - проверка списка пользователей двух групп на отсутствие")
+            print("check_two_groups - сравнение списка подписчиков двух групп (сравнение по прицепу подписки)")
             print("group_info - получить информацию о текущей группе")
             print("exit - выход из программы")
         
