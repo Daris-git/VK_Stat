@@ -284,6 +284,44 @@ def set_time():
     return False
 
 
+def most_popular_posts():
+
+    g_id = "-" + GROUP_ID
+
+    popular_posts = []
+
+    pop_posts_count = 0
+    
+    while(True):
+        print("Введите количество постов, которое вы хотите получить на выходе")
+
+        try:
+            pop_posts_count = int(input("> "))
+            break
+        except Exception as e:
+            logging.error(traceback.format_exc())
+            print("Ошибка!")
+            print("Проверьте правильность введенных данных или свяжитесь с разработчиком")
+
+
+    get_all_posts_id()
+
+    print("Получение списка постов...")
+
+    for id in posts:
+        post_likes = vk.wall.getLikes(owner_id = g_id, post_id = id)
+        popular_posts.append([post_likes['count'], id])
+
+    popular_posts.sort(reverse=True)
+    popular_posts = popular_posts[:pop_posts_count:]
+
+
+    print("Список готов")
+
+    for i in popular_posts:
+        print("Количество лайков:" + str(i[0]) + " https://vk.com/wall-" + str(GROUP_ID) + "_" + str(i[1]))
+
+
 
 
 def non_active_users():
@@ -339,6 +377,7 @@ try:
             print("non_active_users - получение списка неактивных пользователей группы")
             print("get_banned_or_deleted - получение списка удаленных или забаненных пользователей")
             print("check_two_groups - сравнение списка подписчиков двух групп (сравнение по прицепу подписки)")
+            print("most_popular_posts - Получить список самых популярных постов в группе")
             print("group_info - получить информацию о текущей группе")
             print("exit - выход из программы")
         
@@ -353,6 +392,9 @@ try:
 
         if inp.lower() == "check_two_groups":
             check_two_groups()
+
+        if inp.lower() == "most_popular_posts":
+            most_popular_posts()
 
         if inp.lower() == "group_info":
             group_info()
