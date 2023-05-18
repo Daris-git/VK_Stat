@@ -290,13 +290,16 @@ def most_popular_posts():
 
     popular_posts = []
 
-    pop_posts_count = 0
+    pop_posts_count = -1
     
     while(True):
         print("Введите количество постов, которое вы хотите получить на выходе")
+        print("Чтобы получить все посты за определенную дату, нажмите ENTER")
 
         try:
-            pop_posts_count = int(input("> "))
+            pop_posts_input = input("> ")
+            if pop_posts_input == "": break
+            else: pop_posts_count = int(pop_posts_input)
             break
         except Exception as e:
             logging.error(traceback.format_exc())
@@ -306,17 +309,17 @@ def most_popular_posts():
 
     get_all_posts_id()
 
-    print("Получение списка постов...")
+    print("Получение списка популярных постов...")
 
     for id in posts:
         post_likes = vk.wall.getLikes(owner_id = g_id, post_id = id)
         popular_posts.append([post_likes['count'], id])
 
     popular_posts.sort(reverse=True)
-    popular_posts = popular_posts[:pop_posts_count:]
+    if pop_posts_count != -1 and len(popular_posts) >= pop_posts_count: popular_posts = popular_posts[:pop_posts_count:]
 
 
-    print("Список готов")
+    print("Операция завершена. Список получен")
 
     for i in popular_posts:
         print("Количество лайков:" + str(i[0]) + " https://vk.com/wall-" + str(GROUP_ID) + "_" + str(i[1]))
