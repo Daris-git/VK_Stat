@@ -26,8 +26,8 @@ def vk_auth(login, password):
     LOGIN = login
     PASSWORD = password
 
-    vk_session = vk_api.VkApi(login, password, auth_handler = auth_handler)
-    vk_session.auth()
+    vk_session = vk_api.VkApi(login, password, auth_handler=auth_handler, app_id=2685278)
+    vk_session.auth() 
 
     vk = vk_session.get_api()
 
